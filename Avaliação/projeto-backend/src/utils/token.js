@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 /**
  * Chave de validação do JWT.
  */
-const SECRET_KEY = 'aqui vai a chave super secreta!';
+const SECRET_KEY = 'segredodotoken';
 
 /**
  * Middleware que verifica a validade e decodifica o token de autenticação presente no header 'x-access-token'.
@@ -13,12 +13,13 @@ const SECRET_KEY = 'aqui vai a chave super secreta!';
  * @param {next} next
  */
 function authenticationMiddleware(request, response, next) {
-    const token = request.headers["x-access-token"] || request.cookies["x-access-token"];
+    const token = request.headers["token"] || request.cookies["token"];
     try {
         const payload = jwt.verify(token, SECRET_KEY);
         request.usuarioLogado = payload;
         next();
     } catch (ex) {
+        
         console.error('Não foi possível decodificar o token:', token, ex);
         response.status(401).send('Acesso não autorizado.');
     }
@@ -32,7 +33,8 @@ function authenticationMiddleware(request, response, next) {
  */
 function generateToken(payload) {
     delete payload.senha;
-    const token = jwt.sign(payload, SECRET_KEY, { encoding: 'UTF8' });
+    console.log(payload)
+    const token = jwt.sign(payload.nome, SECRET_KEY, { encoding: 'UTF8' });
     return token;
 }
 
